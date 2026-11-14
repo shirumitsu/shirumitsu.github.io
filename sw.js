@@ -1,5 +1,5 @@
 /* Valburg Online: guarda o jogo no aparelho para abrir sem internet */
-var CACHE="valburg-v269";
+var CACHE="valburg-v270";
 var CORE=["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png","./icon-maskable-512.png",
   "https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"];
 self.addEventListener("install",function(e){e.waitUntil(caches.open(CACHE).then(function(c){return Promise.all(CORE.map(function(u){return c.add(u).catch(function(){})}))}).then(function(){return self.skipWaiting()}))});
