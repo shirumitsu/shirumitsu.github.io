@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.shirumitsu.twa",
+        "sha256_cert_fingerprints": ["EB:6B:AB:87:52:E5:D5:B9:7A:2E:3D:6E:9A:A8:4D:02:3A:A4:64:90:45:23:50:34:A3:4B:B1:D1:37:3E:3C:82"]
+      }
+    }]
