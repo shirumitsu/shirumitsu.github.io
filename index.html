@@ -1990,9 +1990,9 @@ function invPanel(){
   h+="</div></div><div style='text-align:center;margin-top:4px'>"+mb("bSort","Organizar mochila")+"</div>";
   if(INV.sel)h+="<div class='note'>Mover: toque num espaço livre para soltar.</div><div style='margin-top:6px'>"+mb("bCancel","Cancelar")+"</div>";
   else if(!INV.menu)h+="<div class='note'>Toque num item para ver as opções.</div>";
-  h+="<div class='note'>Itens de teste (toque para adicionar: itens que acumulam +1000, poções +1):</div><div style='display:flex;flex-wrap:wrap;gap:4px;margin-top:6px'>";
+  if(DEVMODE){h+="<div class='note'>Itens de teste (toque para adicionar: itens que acumulam +1000, poções +1):</div><div style='display:flex;flex-wrap:wrap;gap:4px;margin-top:6px'>";
   testItemKeys().forEach(function(k){var t=TYPES[k];h+="<button class='btn' style='font-size:11px;padding:3px 6px;display:inline-flex;align-items:center;gap:3px' data-add='"+k+"::0'>"+ico(k,16)+" "+t.n+"</button>"});
-  h+="</div>";
+  h+="</div>"}
   show(h,"inv");
   if(mA)ddShow(invMenuHtml(mA),document.getElementById("ddAnc"));
 }
@@ -3752,7 +3752,7 @@ function confPanel(){
     h+="<div class='at'><em>Tela cheia</em><button class='btn' id='cfgFull' style='font-size:12px;padding:5px 8px;min-width:96px'>"+(document.fullscreenElement?"Sair":"Entrar")+"</button></div>";
   }else if(t==="jogo"){
     h+=cfgRow("Joystick do lado direito","cfgJoy",c.joyR,"Troca o joystick e o botão de atacar de lado.")+cfgRow("Dano no chat (aba Sistema)","cfgSys",c.sysDmg,"Mostra quanto de dano você deu e levou.");
-    h+="<div class='at'><em>Botões de teste<br><span style='color:#5b5f8f;font-size:11px'>Atalhos para testar eventos e itens.</span></em><button class='btn' id='bTests' style='font-size:12px;padding:5px 8px;min-width:96px'>"+(st.tests===false?"Desligados":"Ligados")+"</button></div>";
+    if(DEVMODE)h+="<div class='at'><em>Botões de teste<br><span style='color:#5b5f8f;font-size:11px'>Atalhos para testar eventos e itens.</span></em><button class='btn' id='bTests' style='font-size:12px;padding:5px 8px;min-width:96px'>"+(st.tests===false?"Desligados":"Ligados")+"</button></div>";
     var uw=unstuckWait();h+="<div class='at'><em>Destravar personagem<br><span style='color:#5b5f8f;font-size:11px'>Emergência: se o personagem travar, ele volta para Valburg. Só pode usar uma vez a cada 24 horas.</span></em><button class='btn' id='cfgUnstuck' style='font-size:12px;padding:5px 8px;min-width:96px'"+(uw>0?" disabled":"")+">"+(uw>0?"Em "+fmtWait(uw):(UNSTK.arm>Date.now()?"Confirmar":"Usar"))+"</button></div>";
   }else if(t==="idioma"){
     var LG=(function(){try{return localStorage.getItem("mmorpg_lang")||"pt"}catch(e){return "pt"}})();
@@ -3956,7 +3956,9 @@ function enterZ2(k){
 function z2PortalNear(){var r=null;Object.keys(Z2).forEach(function(k){if(!r&&Z2[k].city===zone&&nearP(Z2[k].op))r=k});return r}
 var PORTALS=[],CPORT={x:740,y:270},FPORT={x:50,y:200},BPORT={x:400,y:516},BRET={x:50,y:250},CVPORT={x:60,y:270},CRET={x:320,y:84},beachWater=null;
 function nearP(p){return Phaser.Math.Distance.Between(player.x,player.y,p.x,p.y+14)<14}
-function applyTests(){$("tests").style.display=st.tests===false?"none":"flex"}
+/* modo de desenvolvimento: os botões de teste e os itens de teste só aparecem com ?dev=1 no endereço */
+var DEVMODE=(function(){try{if(/[?&]dev=1/.test(location.search))localStorage.setItem("mmorpg_dev","1");if(/[?&]dev=0/.test(location.search))localStorage.removeItem("mmorpg_dev");return localStorage.getItem("mmorpg_dev")==="1"}catch(e){return false}})();
+function applyTests(){$("tests").style.display=(!DEVMODE||st.tests===false)?"none":"flex"}
 function namePanel(){
   show("<h2>Nome do personagem</h2><div class='desc'>Escolha o nome do seu personagem (2 a 12 letras ou números).</div><div style='margin-top:10px'><input id='nmIn' maxlength='12' autocomplete='off' style='width:100%;box-sizing:border-box;font-family:inherit;font-size:16px;padding:6px 8px;border:2px solid #8a8cae;border-radius:6px;background:#fff;color:#262a4a;user-select:text;-webkit-user-select:text'></div><div style='margin-top:10px'><button class='btn' id='bName'>Confirmar</button></div>","name");
   var xb=$("panel").querySelector?$("panel").querySelector(".xb"):null;if(xb)xb.style.display="none";
