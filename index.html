@@ -278,6 +278,9 @@ body.booting #panel{z-index:20050}
 #bTitle .lg{display:flex;gap:6px;justify-content:center;margin-top:4px}
 #bTitle .lg button{font-size:7px;padding:6px 8px}
 #bTitle .lg button.on{background:linear-gradient(#bfe3ff,#7ab8ff)}
+/* celular deitado (tela baixa): tela inicial mais compacta para tudo caber, inclusive o idioma */
+@media (max-height:560px){#bTitle{overflow-y:auto;justify-content:flex-start;padding-top:8px}#bLogo{width:min(46vw,250px);margin-bottom:0}#bTitle .gs{margin-bottom:6px}#bTitle .bb{gap:4px}
+  #bTitle button,#bModal button{padding:6px 8px}#bTitle button.main{padding:8px}#bTitle .row button{padding:6px 4px}#bGoogle,#bApple{display:none}#bTitle .lg{margin-top:2px}#bTitle .ft{position:static;margin-top:6px;padding-bottom:env(safe-area-inset-bottom,0px)}}
 #bTitle .tap{font-size:9px;color:#fff;text-shadow:2px 2px 0 #1d243e;margin-top:30px;animation:bblink 1.1s steps(2) infinite}
 @keyframes bblink{50%{opacity:0}}
 #bTitle .ft{position:absolute;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));font-size:6px;color:#dfe6f5;text-shadow:1px 1px 0 #000;line-height:11px}
@@ -4880,6 +4883,8 @@ function titleStart(){
   if(zone!=="city"){var noSwap=["dg","necro","wb","gv","gv_ante","arena","prova","navio","treino"];if(noSwap.indexOf(zone)>=0||st.sleep)return false;
     TITLE.back={z:zone,x:player.x,y:player.y,stam:st.stamina};setZone("city",400,372)}
   TITLE.on=true;TITLE.t0=undefined;
+  /* na tela inicial não aparecem os nomes da cidade (NPCs, casas) nem o "!" das missões */
+  TITLE.hid=[];try{cityObjs.concat(QMK||[]).forEach(function(o){if(o&&o.type==="Text"&&o.visible){o.setVisible(false);TITLE.hid.push(o)}})}catch(e){}
   try{scene.cameras.main.stopFollow();scene.cameras.main.centerOn(400,300)}catch(e){}
   var C=["Cavaleiro","Escudeiro","Bruxo","Invocador","Atirador","Assassino"];
   TITLE.spr=C.map(function(c,i){var o=scene.add.image(400,300,"pl_"+PCLS[c]+"_f_0").setOrigin(0.5,0.95);
@@ -4893,7 +4898,7 @@ function titleTick(time,delta){if(!TITLE.on)return;
   TITLE.spr.forEach(function(s,i){var pa=s.a;s.a+=s.sp*dt;var x=400+Math.cos(s.a)*s.rx,y=312+Math.sin(s.a)*s.ry,dx=x-s.o.x,dy=y-s.o.y;
     var dir=Math.abs(dx)>Math.abs(dy)?"s":(dy<0?"b":"f");s.o.setPosition(x,y).setDepth(y);
     if(s.o.setTexture)s.o.setTexture("pl_"+PCLS[s.c]+"_"+dir+"_"+[0,1,0,2][Math.floor(time/160+i)%4]);if(s.o.setFlipX)s.o.setFlipX(dir==="s"&&dx<0)})}
-function titleStop(){if(!TITLE.on)return;TITLE.on=false;TITLE.spr.forEach(function(s){try{s.o.destroy()}catch(e){}});TITLE.spr=[];
+function titleStop(){if(!TITLE.on)return;TITLE.on=false;try{(TITLE.hid||[]).forEach(function(o){if(zone==="city")o.setVisible(true)})}catch(e){}TITLE.hid=[];TITLE.spr.forEach(function(s){try{s.o.destroy()}catch(e){}});TITLE.spr=[];
   if(TITLE.back){var B=TITLE.back;TITLE.back=null;try{setZone(B.z,B.x,B.y);if(typeof B.stam==="number")st.stamina=B.stam}catch(e){}}
   try{scene.cameras.main.startFollow(player,true,0.12,0.12)}catch(e){}try{musicPlay(zoneTrack(zone))}catch(e){}}
 function titleMusic(){try{sndUnlock();SND.want="title";musicPlay("title")}catch(e){}}
