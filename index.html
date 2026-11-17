@@ -3490,7 +3490,7 @@ function cbDrop(b,now){
 function cbTick(time,delta){
   var dt=Math.min(0.05,(delta||16)/1000),now=time;
   /* chat global e da guild (de qualquer lugar) */
-  if(!CB.gAt)CB.gAt=now+8000;if(now>CB.gAt&&!onlChatOn()){CB.gAt=now+20000+Math.random()*15000;var GL=CB.bots.filter(function(x){return x.on!==false}),gb=GL.length?pick(GL):null;if(gb&&!chBlocked(gb.n))chatPush("glob",gb.n,pick(CBGLO))}
+  if(!CB.gAt)CB.gAt=now+8000;if(false&&now>CB.gAt&&!onlChatOn()){CB.gAt=now+20000+Math.random()*15000;var GL=CB.bots.filter(function(x){return x.on!==false}),gb=GL.length?pick(GL):null;if(gb&&!chBlocked(gb.n))chatPush("glob",gb.n,pick(CBGLO))}
   if(!CB.guAt)CB.guAt=now+25000;if(now>CB.guAt){CB.guAt=now+40000+Math.random()*30000;var M=cbGuildMates();if(M.length)chatPush("guild",pick(M),pick(CBGUI))}
   CB.bots.forEach(function(b,i){
     var o=b.o,hr=Math.floor(Date.now()/3600000);if(b.onHr!==hr){b.onHr=hr;b.on=b.casual?frOnAt(b.n,hr,true):true}var here=b.z===zone&&b.on;
@@ -3501,7 +3501,7 @@ function cbTick(time,delta){
         if(dl<3){b.wait=now+1000+Math.random()*3000;var p=cbSpot(b.z);b.tx=p.x;b.ty=p.y}
         else{var sp=32*dt,nx=o.x+dx/dl*Math.min(sp,dl),ny=o.y+dy/dl*Math.min(sp,dl);if(blocked(nx,ny-8,cbBlk(b.z))){var p2=cbSpot(b.z);b.tx=p2.x;b.ty=p2.y}else{o.x=nx;o.y=ny;mv=true;b.dir=Math.abs(dx)>Math.abs(dy)?"s":(dy<0?"b":"f")}}}}
     else if(b.role==="chat"){if(!b.talkAt)b.talkAt=now+3000+i*900;if(now>b.talkAt){b.talkAt=now+7000+Math.random()*7000;if(!chBlocked(b.n)){var tx=pick(CBLOC);chatPush("local",b.n,tx);cbBubble(b,tx,now)}}}
-    else if(b.role==="drop"){if(!b.dropAt)b.dropAt=now+10000;if(now>b.dropAt){b.dropAt=now+10000;cbDrop(b,now)}}
+    else if(b.role==="drop"){if(!b.dropAt)b.dropAt=now+60000;if(now>b.dropAt){b.dropAt=now+60000;cbDrop(b,now)}}
     var key="pl_"+PCLS[b.cls]+"_"+(mv?b.dir:"f")+"_"+(mv?[0,1,0,2][Math.floor(now/150+i)%4]:0);if(o.setTexture)o.setTexture(key);if(o.setFlipX)o.setFlipX(mv&&dx<0);
     o.setVisible(true).setDepth(o.y);
     var talk=b.bubUntil>now&&!chBlocked(b.n);
@@ -11160,7 +11160,7 @@ function onlSee(n){if(!onlChatOn()){msg("Jogador não encontrado: "+n+".");retur
   ONL.db.collection("rank").doc(R.uid).get().then(function(d){var x=d.exists?d.data():null;msg(x?R.n+": nível "+(x.lv||1)+", "+(x.cls||"Aluno")+" · gold "+(x.gold||0).toLocaleString("pt-BR")+" · PVP "+(x.pvp||0)+" · chefes "+(x.boss||0)+(ONL.banned[R.uid]?(ONL.banned[R.uid].ban?" · BANIDO":" · silenciado"):""):R.n+": jogador real, ainda sem dados no ranking.",6000)}).catch(function(){msg("Não deu certo.")})});return true}
 function onlRealTarget(n){n=String(n||"").trim();return !!(n&&onlChatOn()&&!onlIsBot(n)&&n.toLowerCase()!==String(st.name||"").toLowerCase())}
 /* ===== Sem bots: o mundo fica só com jogadores reais ===== */
-var NOBOTS=true;try{if(localStorage.getItem("mmorpg_bots")==="1")NOBOTS=false}catch(e){}
+var NOBOTS=false;try{if(localStorage.getItem("mmorpg_bots")==="1")NOBOTS=false}catch(e){}
 function nbSet(v){NOBOTS=!!v}
 function nbClean(){if(!NOBOTS)return;var ch=false;
   if(st.guild&&Array.isArray(st.guild.members)){var n0=st.guild.members.length;st.guild.members=st.guild.members.filter(function(m){return m.me});if(st.guild.members.length!==n0)ch=true}
@@ -11695,7 +11695,7 @@ new Phaser.Game({
   $("bGoogle").textContent=T("Entrar com Google (em breve)","Sign in with Google (coming soon)");$("bGoogle").addEventListener("click",function(){if(this.disabled)return;try{window.__onlOpen&&window.__onlOpen()}catch(e){}});$("bApple").textContent=T("Entrar com Apple (em breve)","Sign in with Apple (coming soon)");
   $("bNews").textContent=T("Notícias","News");$("bCred").textContent=T("Créditos","Credits");$("bConf").textContent=T("Config.","Settings");
   $("bGs").textContent=EN?"Valburg · SolForge · Ossuary":"Valburg · SolForge · Ossuário";
-  $("bFt").innerHTML=T("Versão 0.9 (protótipo) · build 277","Version 0.9 (prototype) · build 277")+"<br>© 2026 MITH Studio";
+  $("bFt").innerHTML=T("Versão 0.9 (protótipo) · build 278","Version 0.9 (prototype) · build 278")+"<br>© 2026 MITH Studio";
   [].forEach.call(boot.querySelectorAll("[data-blang]"),function(b){if(b.getAttribute("data-blang")===lang)b.className="on"});
   function srvTxt(){var s=SERV.filter(function(x){return x.id===srv})[0]||SERV[0];$("bServer").innerHTML=T("Servidor: ","Server: ")+s.n+" · <span style='color:"+s.c+"'>"+s.s+"</span> ▸"}srvTxt();
   var show=function(id){[].forEach.call(boot.querySelectorAll(".bs"),function(s){s.classList.toggle("on",s.id===id)})};
