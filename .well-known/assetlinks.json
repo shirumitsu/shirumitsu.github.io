@@ -1,8 +1,17 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "io.github.shirumitsu.twa",
-        "sha256_cert_fingerprints": ["EB:6B:AB:87:52:E5:D5:B9:7A:2E:3D:6E:9A:A8:4D:02:3A:A4:64:90:45:23:50:34:A3:4B:B1:D1:37:3E:3C:82"]
-      }
-    }]
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.mithstudio.valburg",
+      "sha256_cert_fingerprints": [
+        "5D:C6:1D:36:26:46:4B:43:71:19:FD:52:31:EF:7E:93:69:E9:56:82:5F:18:B9:ED:29:94:C1:88:E3:78:2E:50",
+        "4B:65:94:A7:D4:AD:7D:1F:66:B8:B3:8D:40:C5:C9:A2:32:0E:CE:B3:52:69:7B:FB:A2:57:A6:F3:07:6E:B6:12",
+        "F6:B7:82:8F:36:C8:3F:C2:86:6B:1D:41:61:11:B8:9B:D5:5A:BB:50:B3:80:D3:15:41:BC:A5:DD:21:A1:34:3E",
+        "EB:6B:AB:87:52:E5:D5:B9:7A:2E:3D:6E:9A:A8:4D:02:3A:A4:64:90:45:23:50:34:A3:4B:B1:D1:37:3E:3C:82"
+      ]
+    }
+  }
+]
