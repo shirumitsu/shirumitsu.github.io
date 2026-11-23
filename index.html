@@ -11212,16 +11212,26 @@ function solidZone(z){if(SOLIDZ[z])return SOLIDZ[z];var L=z==="city"?cityObjs:(z
     if((d&&d[2])||(z==="city"&&TALLCITY[k]))S.tall.push(o)});
   try{if(S.n&&CB.bots)CB.bots.forEach(function(b){if(b.z===z&&b.o&&blocked(b.o.x,b.o.y-8,IBL[z])){var q=cbSpot(z);if(q){b.o.x=q.x;b.o.y=q.y;b.tx=q.x;b.ty=q.y}}})}catch(e){}
   return S}
-/* silhueta: quando o boneco passa por trás de árvore, coluna ou casa, aparece a silhueta dele por cima (o cenário continua inteiro) */
+/* silhueta: quando o boneco passa por trás de árvore, coluna ou casa, só a parte escondida aparece como sombra azulada;
+   o que está visível continua com a cor normal (recorte no retângulo da árvore + máscara no formato dela quando o celular usa WebGL) */
 var PSIL=null;
-function solidBehind(){var S=SOLIDZ[zone];if(!S||!S.tall.length||!player)return false;var px=player.x,py=player.y,nm=function(v,d){return typeof v==="number"&&v>0?v:d};
-  return S.tall.some(function(o){if(o.visible===false)return false;var w=nm(o.displayWidth,nm(o.width,32))/2,h=nm(o.displayHeight,nm(o.height,48));return py<o.y-2&&py>o.y-h+6&&Math.abs(px-o.x)<w+2})}
-function solidFade(){if(!player)return false;var on=solidBehind()&&player.visible!==false&&!PDEAD;
+function solidNum(v,d){return typeof v==="number"&&v>0?v:d}
+function solidBehind(){var S=SOLIDZ[zone];if(!S||!S.tall.length||!player)return null;var px=player.x,py=player.y,best=null;
+  S.tall.forEach(function(o){if(o.visible===false)return;var w=solidNum(o.displayWidth,solidNum(o.width,32))/2,h=solidNum(o.displayHeight,solidNum(o.height,48));
+    if(py<o.y-2&&py>o.y-h+6&&Math.abs(px-o.x)<w+2&&(!best||o.y>best.y))best=o});return best}
+function solidFade(){if(!player)return false;var o=solidBehind(),on=!!o&&player.visible!==false&&!PDEAD;
   if(!PSIL){if(!on)return false;try{PSIL=scene.add.image(player.x,player.y,player.texture.key)}catch(e){return false}}
   if(!on){if(PSIL.visible!==false)PSIL.setVisible(false);return false}
   try{PSIL.setTexture(player.texture.key)}catch(e){}
-  PSIL.setOrigin(player.originX,player.originY).setPosition(player.x,player.y).setFlipX(!!player.flipX).setDepth(5100).setAlpha(0.55).setVisible(true);
+  PSIL.setOrigin(player.originX,player.originY).setPosition(player.x,player.y).setFlipX(!!player.flipX).setDepth(5100).setAlpha(0.6).setVisible(true);
   try{if(PSIL.setTintFill)PSIL.setTintFill(0x9ad8ff);else PSIL.setTint(0x9ad8ff)}catch(e){}
+  /* recorte: só a área do boneco que fica dentro da árvore */
+  try{var pw=solidNum(player.width,32),ph=solidNum(player.height,40),pl=player.x-pw*player.originX,pt=player.y-ph*player.originY,
+    ow=solidNum(o.displayWidth,solidNum(o.width,32)),oh=solidNum(o.displayHeight,solidNum(o.height,48)),ol=o.x-ow*(typeof o.originX==="number"?o.originX:0.5),ot=o.y-oh*(typeof o.originY==="number"?o.originY:1),
+    x0=Math.max(pl,ol),x1=Math.min(pl+pw,ol+ow),y0=Math.max(pt,ot),y1=Math.min(pt+ph,ot+oh);
+    if(PSIL.setCrop){if(x1>x0&&y1>y0){var cx=player.flipX?(pl+pw-x1):(x0-pl);PSIL.setCrop(Math.round(cx),Math.round(y0-pt),Math.round(x1-x0),Math.round(y1-y0))}else PSIL.setVisible(false)}}catch(e){}
+  /* máscara no formato da árvore (só WebGL) */
+  try{if(scene.renderer&&scene.renderer.type===Phaser.WEBGL&&o.createBitmapMask){if(!o._bm)o._bm=o.createBitmapMask();if(PSIL.mask!==o._bm)PSIL.setMask(o._bm)}}catch(e){}
   return true}
 var WBASE=["espada","espada2","faca","cajado","arco"];
 /* drop de "arma" dos chefes: sorteia entre os 5 tipos de arma e o escudo do mesmo número (o escudo divide a chance) */
@@ -11750,7 +11760,7 @@ new Phaser.Game({
   $("bGoogle").textContent=T("Entrar com Google (em breve)","Sign in with Google (coming soon)");$("bGoogle").addEventListener("click",function(){if(this.disabled)return;try{window.__onlOpen&&window.__onlOpen()}catch(e){}});$("bApple").textContent=T("Entrar com Apple (em breve)","Sign in with Apple (coming soon)");
   $("bNews").textContent=T("Notícias","News");$("bCred").textContent=T("Créditos","Credits");$("bConf").textContent=T("Config.","Settings");
   $("bGs").textContent=EN?"Valburg · SolForge · Ossuary":"Valburg · SolForge · Ossuário";
-  $("bFt").innerHTML=T("Versão 0.9 (protótipo) · build 280","Version 0.9 (prototype) · build 280")+"<br>© 2026 MITH Studio";
+  $("bFt").innerHTML=T("Versão 0.9 (protótipo) · build 281","Version 0.9 (prototype) · build 281")+"<br>© 2026 MITH Studio";
   [].forEach.call(boot.querySelectorAll("[data-blang]"),function(b){if(b.getAttribute("data-blang")===lang)b.className="on"});
   function srvTxt(){var s=SERV.filter(function(x){return x.id===srv})[0]||SERV[0];$("bServer").innerHTML=T("Servidor: ","Server: ")+s.n+" · <span style='color:"+s.c+"'>"+s.s+"</span> ▸"}srvTxt();
   var show=function(id){[].forEach.call(boot.querySelectorAll(".bs"),function(s){s.classList.toggle("on",s.id===id)})};
